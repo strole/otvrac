@@ -11,14 +11,14 @@
 >Engleski
 
 # Opis atributa koji se nalaze u skupu podataka
->name: ime broda
->model: model broda
->type: tip broda (catamaran, monohull, MY)
->year: godina proizvodnje
->length: dužina broda
->beam: širina broda
->cabins: broj kabina
->berths: broj kreveta
->wc: broj WC-ova
->skipper: skipper (ime, prezime, licenca)
->base: matična baza broda (ime i broj)
+>name: ime broda <br />
+>model: model broda <br />
+>type: tip broda (catamaran, monohull, MY) <br />
+>year: godina proizvodnje <br />
+>length: dužina broda <br />
+>beam: širina broda <br />
+>cabins: broj kabina <br />
+>berths: broj kreveta <br />
+>wc: broj WC-ova <br />
+>skipper: skipper (ime, prezime, licenca) <br />
+>base: matična baza broda (ime i broj) <br />
