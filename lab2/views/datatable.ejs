@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- CSS only -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.datatables.net/buttons/2.0.1/css/buttons.dataTables.min.css"
+    />
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.0.1/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.0.1/js/buttons.html5.min.js"></script>
+
+    <title><%= title %>%></title>
+  </head>
+  <div class="container">
+    <div class="jumbotron text-dark mt-2 pt-2 mb-5">
+      <table id="boatsTable" class="table"></table>
+    </div>
+  </div>
+
+  <body>
+    <script>
+      $.ajax({
+        url: "/boats",
+        dataType: "json",
+        type: "GET",
+        contentType: "application/json; charset=utf-8",
+
+        success: function (data) {
+          console.log("DATA:");
+          console.log(data);
+          var tr =
+            "<thead><tr><th>Name</th><th>Model</th><th>Type</th><th>Year</th><th>Length</th><th>Beam</th><th>Cabins</th><th>Berths</th><th>WC</th><th>Base name</th><th>Base number</th><th>Skipper name</th><th>Skipper surname</th><th>Skipper licence</th></tr></thead>";
+          tr += "<tbody>";
+          for (let i = 0; i < data.length; i++) {
+            tr += "<tr>";
+            tr += "<td>" + data[i].name + "</td>";
+            tr += "<td>" + data[i].model + "</td>";
+            tr += "<td>" + data[i].type + "</td>";
+            tr += "<td>" + data[i].year + "</td>";
+            tr += "<td>" + data[i].length + "</td>";
+            tr += "<td>" + data[i].beam + "</td>";
+            tr += "<td>" + data[i].cabins + "</td>";
+            tr += "<td>" + data[i].berths + "</td>";
+            tr += "<td>" + data[i].wc + "</td>";
+            tr += "<td>" + data[i].base.name + "</td>";
+            tr += "<td>" + data[i].base.number + "</td>";
+            tr += "<td>" + data[i].skipper.name + "</td>";
+            tr += "<td>" + data[i].skipper.surname + "</td>";
+            tr += "<td>" + data[i].skipper.licence + "</td>";
+
+            tr += "</tr>";
+          }
+          tr += "</body>";
+          console.log(tr);
+          $("#boatsTable").append(tr);
+          tblFormation();
+        },
+        error: function (xhr) {
+          console.log("error");
+        },
+      });
+      function tblFormation() {
+        $("#boatsTable").DataTable({
+          searching: true,
+          processing: true,
+          scrollY: 700,
+          deferRender: true,
+          scroller: true,
+          dom: "Bfrtip",
+          buttons: [
+            {
+              text: "JSON",
+              action: function (e, dt, button, config) {
+                var data = dt.buttons.exportData();
+                console.log(data);
+                $.fn.dataTable.fileSave(
+                  new Blob([csvJSON(dataToCSV(data))]),
+                  "Export.json"
+                );
+              },
+            },
+            {
+              text: "CSV",
+              action: function (e, dt, button, config) {
+                var data = dt.buttons.exportData();
+                console.log(data);
+                $.fn.dataTable.fileSave(
+                  new Blob([dataToCSV(data)]),
+                  "Export.csv"
+                );
+              },
+            },
+          ],
+        });
+      }
+      function dataToCSV(data) {
+        csv = "";
+        data.header.forEach((element) => {
+          csv += element + ",";
+          console.log(element);
+        });
+        csv = csv.slice(0, -1);
+        csv += "\n";
+        data.body.forEach((element) => {
+          csv += element + "\n";
+          console.log(element);
+        });
+        return csv;
+      }
+      function csvJSON(csv) {
+        var lines = csv.split("\n");
+
+        var result = [];
+
+        // NOTE: If your columns contain commas in their values, you'll need
+        // to deal with those before doing the next step
+        // (you might convert them to &&& or something, then covert them back later)
+        // jsfiddle showing the issue https://jsfiddle.net/
+        var headers = lines[0].split(",");
+
+        for (var i = 1; i < lines.length; i++) {
+          var obj = {};
+          var currentline = lines[i].split(",");
+
+          for (var j = 0; j < headers.length; j++) {
+            obj[headers[j]] = currentline[j];
+          }
+
+          result.push(obj);
+        }
+
+        //return result; //JavaScript object
+        return JSON.stringify(result); //JSON
+      }
+    </script>
+  </body>
+</html>
